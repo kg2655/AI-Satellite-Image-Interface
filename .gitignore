@@ -1,0 +1,9 @@
+node_modules/
+dataset/
+backend/venv/
+backend/__pycache__/
+backend/outputs/
+backend/uploads/
+backend/*.pth
+backend/*.png
+.env
