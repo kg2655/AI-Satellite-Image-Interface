@@ -10,11 +10,11 @@ from model import SiameseUNet
 # CONFIG
 # ------------------
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-MODEL_PATH = "siamese_unet_small.pth"
+MODEL_PATH = "siamese_unet_full.pth"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATASET_PATH = os.path.join(BASE_DIR, "..", "dataset", "LEVIR_CD")
 
-SAVE_PATH = "prediction_result.png"
+SAVE_PATH = "outputs/visual_results_grid.png"
 
 # ------------------
 # LOAD MODEL
@@ -56,35 +56,35 @@ with torch.no_grad():
         align_corners=False
     )
 
-pred_mask = pred.squeeze().cpu().numpy()
+pred_mask = (pred.squeeze().cpu().numpy() > 0.5).astype(int)
 
 # ------------------
 # VISUALIZATION
 # ------------------
-plt.figure(figsize=(12, 4))
+plt.figure(figsize=(16, 4))
 
 plt.subplot(1, 4, 1)
-plt.title("Before Image")
+plt.title("(a) Pre-change image", fontsize=14, fontweight="bold")
 plt.imshow(imgA)
 plt.axis("off")
 
 plt.subplot(1, 4, 2)
-plt.title("After Image")
+plt.title("(b) Post-change image", fontsize=14, fontweight="bold")
 plt.imshow(imgB)
 plt.axis("off")
 
 plt.subplot(1, 4, 3)
-plt.title("Ground Truth")
+plt.title("(c) Ground truth", fontsize=14, fontweight="bold")
 plt.imshow(label, cmap="gray")
 plt.axis("off")
 
 plt.subplot(1, 4, 4)
-plt.title("Predicted Change")
-plt.imshow(pred_mask, cmap="hot")
+plt.title("(d) Predicted change mask", fontsize=14, fontweight="bold")
+plt.imshow(pred_mask, cmap="gray")
 plt.axis("off")
 
 plt.tight_layout()
 plt.savefig(SAVE_PATH)
-plt.show()
+print(f"Prediction saved as {SAVE_PATH}")
 
 print(f"Prediction saved as {SAVE_PATH}")
