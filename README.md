@@ -1,92 +1,65 @@
-<div align="center">
-  <h1>🌍 AI Satellite Image Interface</h1>
-  <p><strong>A state-of-the-art Computer Vision interface for high-resolution Satellite Image Change Detection</strong></p>
-  
-  [![Python](https://img.shields.io/badge/Python-3.10+-blue?style=for-the-badge&logo=python)](https://python.org)
-  [![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org)
-  [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
-  [![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-</div>
+# 🌍 AI Satellite Image Interface - Change Detection System
 
-<br>
+![React](https://img.shields.io/badge/Frontend-React%20%7C%20Vite-blue?style=for-the-badge&logo=react)
+![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?style=for-the-badge&logo=fastapi)
+![PyTorch](https://img.shields.io/badge/AI_Model-PyTorch-EE4C2C?style=for-the-badge&logo=pytorch)
+![Docker](https://img.shields.io/badge/Deployed_With-Docker-2496ED?style=for-the-badge&logo=docker)
 
-## 🚀 Overview
+A decoupled, full-stack Artificial Intelligence application designed to detect and highlight geographic, urban, and environmental changes by analyzing dual-temporal satellite imagery. 
 
-The **AI Satellite Image Interface** is a fully integrated full-stack application designed to automatically detect and highlight topographical changes between two temporal satellite images (Before & After). By deeply analyzing landscapes, infrastructure, and urban spread, this interface helps researchers, educators, and organizations instantly identify planetary spatial changes over time!
-
-Powered by a highly accurate **Siamese U-Net** Deep Learning architecture built in PyTorch, it evaluates high-resolution geospatial imagery and serves the beautiful, colorful results straight to a modern interactive web dashboard.
+### 🚀 Live Demo: [ai-satellite-image-interface.vercel.app](https://ai-satellite-image-interface.vercel.app/)
 
 ---
 
-## 🔥 Key Features
-
-- **Advanced Siamese U-Net AI:** Built precisely for satellite change detection leveraging the robust LEVIR-CD dataset.
-- **High-Accuracy Pipelines:** Achieving **> 97% Pixel-wise Accuracy** with dedicated training routines and dynamic loss optimizations (Dice + BCE).
-- **Interactive Web Interface:** A pristine frontend application where users can seamlessly upload pre and post-event images, view side-by-side comparisons, and instantly see the colored overlay of the predicted changes!
-- **In-Depth Evaluation Metrics:** Evaluate models directly from the terminal (Accuracy, Precision, Recall, F1, IoU) complete with beautifully formatted, natively generated Confusion Matrix visualizations.
-- **Hardware Optimized:** Features Automatic Mixed Precision (AMP) allowing for blazing fast GPU training out of the box.
-
----
+## 📖 Overview
+Tracking urban sprawl, deforestation, and natural disaster impacts manually is practically impossible. This system automates the process by taking a **Pre-change (Time 1)** satellite image and a **Post-change (Time 2)** satellite image and running them through a custom **Siamese U-Net** deep learning model. The application outputs a precise, pixel-perfect binary mask highlighting exclusively what has changed between the two timelines.
 
 ## 🛠️ Technology Stack
+This project operates on a modern microservice architecture:
 
-- **Frontend:** React, Vite, TailwindCSS (Responsive, beautiful visualization)
-- **Backend:** FastAPI, Uvicorn, Python (Handles rapid REST API handshakes & model inference)
-- **Deep Learning:** PyTorch, Torchvision, Seaborn / Matplotlib (Training, prediction, & Metrics)
+*   **Frontend (User Interface):** React.js, Vite, TailwindCSS
+    *   *Hosted on:* Vercel Serverless
+*   **Backend (REST API):** Python, FastAPI, Docker
+    *   *Hosted on:* Render Container Service
+*   **Deep Learning & AI:** PyTorch, Torchvision, OpenCV, NumPy
+    *   *Model Architecture:* Siamese U-Net (Shared-Weight Encoders)
+    *   *Loss Function:* Combined BCE (Binary Cross Entropy) + Dice Loss
 
----
+## 🗄️ Dataset
+The model was trained heavily on the **LEVIR-CD Dataset**, a massive open-source building change detection dataset containing ultra-high-resolution Google Earth images. 
+*   **Challenge Solved:** Overcoming the "Class Imbalance" problem (where 95% of the land doesn't change) using aggressive Dice Loss penalty functions to force the network to identify rare building construction.
 
-## ⚙️ How to Run Locally
+## ⚙️ System Architecture Workflow
+1. User uploads a Before and After image to the React frontend.
+2. React packages the images into a `FormData` object and dispatches an asynchronous `POST` request.
+3. The FastAPI server intercepts the images and translates them into rigid PyTorch `256x256` mathematical tensors.
+4. The Siamese U-Net passes the dual timelines through a shared-weight Convolutional encoder, compares the absolute spatial differences at the bottleneck, and upscales them into a binary matrix.
+5. The matrix is converted into a `base64` image string and relayed back to the user's screen in milliseconds.
 
-To get the complete app up and running on your local machine, you'll need to spin up both the Vite Frontend and the Python Backend.
+## 💻 Local Setup Instructions
 
-### 1. Start the Backend (AI Model & APIs)
-Open a terminal and navigate to the project directory, then:
+If you want to run this application on your local machine:
+
+### 1. Start the Backend (FastAPI)
 ```bash
-# Navigate to the backend directory
 cd backend
-
-# Activate your virtual environment (Windows)
-venv\Scripts\activate
-
-# Install the Python requirements
+python -m venv venv
+venv\Scripts\activate      # Or `source venv/bin/activate` on Mac/Linux
 pip install -r requirements.txt
 
-# Start the FastAPI backend server
-python -m uvicorn main:app
+# Start the server
+uvicorn main:app --reload --port 8000
 ```
 
-### 2. Start the Frontend (User Interface)
-Open a **new** separate terminal window, remain in the main root directory, and run:
+### 2. Start the Frontend (React)
+Open a new terminal window:
 ```bash
-# Install Node dependencies
+# Ensure you are in the root directory
 npm install
-
-# Start the Vite development server
 npm run dev
 ```
-Navigate to your local browser URL provided in the terminal to interact with the dashboard!
+
+*Note: You must have `siamese_unet_full.pth` (the model weights) inside the `/backend` folder for the server to successfully boot.*
 
 ---
-
-## 🧠 Model Training & Evaluation
-
-Want to re-train the Siamese U-Net or test the accuracy? Everything happens inside the `/backend` folder.
-
-**Train the Model:**
-```bash
-python train_model.py
-```
-*Note: Configured out of the box with GPU hardware acceleration (`cuda`) support. Evaluates across 50 Epochs by default to achieve maximum golden baseline accuracy!*
-
-**Evaluate the Model:**
-```bash
-python evaluate_model.py
-```
-This script runs the validation dataset through your latest weights and prints a highly colorful **Confusion Matrix**, while breaking down your Precision, Recall, F1-Score, and Intersection over Union (IoU) statistics.
-
----
-
-<div align="center">
-  <i>Built to observe the Earth from above.</i>
-</div>
+*Built as a comprehensive research and development capstone project.*
